@@ -1,6 +1,6 @@
-/* travel view */
+/* about */
 const about = (req, res) => {
-    res.render('about', { about: true, title: 'Travlr Getaways'});
+    res.render('about', { about: true, title: 'About - Travlr Getaways'});
 };
 
 module.exports = {

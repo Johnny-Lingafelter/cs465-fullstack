@@ -1,6 +1,6 @@
 /* contact */
 const contact = (req, res) => {
-    res.render('contact', { contact: true, title: 'Travlr Getaways'});
+    res.render('contact', { contact: true, title: 'Contact - Travlr Getaways'});
 };
 
 module.exports = {
