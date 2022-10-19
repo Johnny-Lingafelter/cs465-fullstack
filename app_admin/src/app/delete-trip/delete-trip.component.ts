@@ -4,13 +4,13 @@ import { Router } from "@angular/router";
 import { TripDataService } from '../services/trip-data.service';
 
 @Component({
-  selector: 'app-edit-trip',
-  templateUrl: './edit-trip.component.html',
-  styleUrls: ['./edit-trip.component.css']
+  selector: 'app-delete-trip',
+  templateUrl: './delete-trip.component.html',
+  styleUrls: ['./delete-trip.component.css']
 })
-export class EditTripComponent implements OnInit {
+export class DeleteTripComponent implements OnInit {
 
-  editForm: FormGroup;
+  deleteForm: FormGroup;
   submitted = false;
 
   constructor(
@@ -27,9 +27,9 @@ export class EditTripComponent implements OnInit {
       return;
     }
 
-    console.log('EditTripComponent#onInit found tripCode ' + tripCode);
+    console.log('DeleteTripComponent#onInit found tripCode ' + tripCode);
 
-    this.editForm = this.formBuilder.group({
+    this.deleteForm = this.formBuilder.group({
       _id: [],
       code: ['', Validators.required],
       name: ['', Validators.required],
@@ -44,15 +44,15 @@ export class EditTripComponent implements OnInit {
     this.tripService.getTrip(tripCode)
       .then(data => {
         console.log(data);
-        this.editForm.patchValue(data[0]);
+        this.deleteForm.patchValue(data[0]);
       });
   }
 
   onSubmit() {
     this.submitted = true;
 
-    if (this.editForm.valid) {
-      this.tripService.updateTrip(this.editForm.value)
+    if (this.deleteForm.valid) {
+      this.tripService.deleteTrip(this.deleteForm.value)
         .then(data => {
           console.log(data);
           this.router.navigate(['list-trips']);
@@ -60,6 +60,11 @@ export class EditTripComponent implements OnInit {
     }
   }
 
-  get f() { return this.editForm.controls; }
+  onCancel() {
+    this.submitted = false;
+    this.router.navigate(['list-trips']);
+  }
+
+  get f() { return this.deleteForm.controls; }
 
 }

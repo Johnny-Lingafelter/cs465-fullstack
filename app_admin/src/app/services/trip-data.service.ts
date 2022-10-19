@@ -1,11 +1,10 @@
 import { Injectable, Inject } from '@angular/core';
-import { Http } from '@angular/http';
+import { Http, Headers, RequestOptions } from '@angular/http';
 
 import { Authresponse } from '../models/authresponse';
 import { BROWSER_STORAGE } from '../storage';
 import { Trip } from '../models/trip';
 import { User } from '../models/user';
-//import { response } from 'express';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +15,9 @@ export class TripDataService {
 
   private apiBaseUrl = 'http://localhost:3000/api/';
   private tripUrl = `${this.apiBaseUrl}trips/`;
+  private httpOptions = new RequestOptions({
+      headers: new Headers({'Authorization': `Bearer ${this.storage.getItem('travlr-token')}`})
+  });
 
   public getTrips(): Promise<Trip[]> {
     console.log('Inside TripDataService#getTrips');
@@ -38,7 +40,7 @@ export class TripDataService {
   public addTrip(formData: Trip): Promise<Trip> {
     console.log('Inside TripDataService#addTrip');
     return this.http
-      .post(this.tripUrl, formData)
+      .post(this.tripUrl, formData, this.httpOptions)
       .toPromise()
       .then(response => response.json() as Trip[])
       .catch(this.handleError);
@@ -46,9 +48,17 @@ export class TripDataService {
 
   public updateTrip(formData: Trip): Promise<Trip> {
     console.log('Inside TripDataService#updateTrip');
-    console.log(formData);
     return this.http
-      .put(this.tripUrl + formData.code, formData)
+      .put(this.tripUrl + formData.code, formData, this.httpOptions)
+      .toPromise()
+      .then(response => response.json() as Trip[])
+      .catch(this.handleError);
+  }
+
+  public deleteTrip(formData: Trip): Promise<Trip> {
+    console.log('Inside TripDataService#DeleteTrip');
+    return this.http
+      .delete(this.tripUrl + formData.code, this.httpOptions)
       .toPromise()
       .then(response => response.json() as Trip[])
       .catch(this.handleError);
@@ -68,7 +78,7 @@ export class TripDataService {
   }
 
   private makeAuthApiCall(urlPath: string, user: User): Promise<Authresponse> {
-    const url: string = `${this.apiBaseUrl}/${urlPath}`;
+    const url: string = `${this.apiBaseUrl}${urlPath}`;
     return this.http.post(url, user)
                     .toPromise()
                     .then(response => response.json() as Authresponse)

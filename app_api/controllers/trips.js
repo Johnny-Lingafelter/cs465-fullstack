@@ -74,8 +74,8 @@ const tripsAddTrip = async (req, res) => {
 }
 
 const tripsUpdateTrip = async (req, res) => {
+    console.log('tripsUpdateTrip');
     getUser(req, res, (req, res) => {
-        console.log(req.body);
         Model.findOneAndUpdate({ 'code': req.params.tripCode }, {
             code: req.body.code,
             name: req.body.name,
@@ -110,7 +110,36 @@ const tripsUpdateTrip = async (req, res) => {
     });
 }
 
+const tripsDeleteTrip = async (req, res) => {
+    console.log('tripsDeleteTrip');
+    getUser(req, res, (req, res) => {
+        Model.findOneAndDelete({ 'code': req.params.tripCode })
+        .then(trip => {
+            if (!trip) {
+                return res
+                    .status(404)
+                    .send({
+                        message: "Trip not found with code " + req.params.tripCode
+                    });
+            }
+            res.send(trip);
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res
+                    .status(404)
+                    .send({
+                        message: "Trip not found with code " + req.params.tripCode
+                    });
+            }
+            return res
+                .status(500)
+                .json(err);
+        });
+    });
+}
+
 const getUser = (req, res, callback) => {
+    console.log('in getUser');
     if (req.auth && req.auth.email) {
         User.findOne({ email: req.auth.email })
             .exec((err, user) => {
@@ -133,5 +162,6 @@ module.exports = {
     tripsList,
     tripsFindByCode,
     tripsAddTrip,
-    tripsUpdateTrip
+    tripsUpdateTrip,
+    tripsDeleteTrip
 };
